@@ -1,4 +1,4 @@
-[OGDF](/README.md) » Release Notes
+[OGDF](README.md) » Release Notes
 
 # Release Notes {#relnotes}
 
