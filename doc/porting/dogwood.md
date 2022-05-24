@@ -1,4 +1,4 @@
-[OGDF](../../README.md) » [Porting Guide](../porting.md) » Dogwood
+[OGDF](/README.md) » [Porting Guide](../porting.md) » Dogwood
 
 # Porting from Catalpa to Dogwood
 

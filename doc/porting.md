@@ -1,4 +1,4 @@
-[OGDF](../README.md) » Porting Guide
+[OGDF](/README.md) » Porting Guide
 
 # Porting Guide {#porting}
 

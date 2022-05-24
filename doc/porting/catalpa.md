@@ -1,4 +1,4 @@
-[OGDF](../../README.md) » [Porting Guide](../porting.md) » Catalpa
+[OGDF](/README.md) » [Porting Guide](../porting.md) » Catalpa
 
 # Porting from Baobab to Catalpa
 

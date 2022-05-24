@@ -1,4 +1,4 @@
-[OGDF](../README.md) » Build Guide
+[OGDF](/README.md) » Build Guide
 
 # Build Guide {#build}
 
