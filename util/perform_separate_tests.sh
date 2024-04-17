@@ -69,7 +69,7 @@ performTest() {
 		else
 			# no sanitizer output? Output errors or last 10 lines
 			echo "From the log:"
-			grep -B 1 -A 5 "^#" "$logfile" || tail -n 11 "$logfile"
+			grep -B 1 -A 5 "^#" "$logfile" || tail -n 501 "$logfile"
 		fi
 		return 255
 	fi
