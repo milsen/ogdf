@@ -29,7 +29,7 @@ else
 fi
 
 performTest() {
-	echo "starting: $1"
+	echo "starting: $1 (with PID $$ and BASHPID $BASHPID)"
 
 	$2/$1 --reporter=crash --only="7469310868675805"
 	result=$?

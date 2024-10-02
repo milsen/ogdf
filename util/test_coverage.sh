@@ -50,6 +50,9 @@ echo "::endgroup::"
 export LLVM_PROFILE_FILE="$(realpath build-coverage/profraw)/%p.profraw"
 util/run_examples.sh
 util/perform_separate_tests.sh build-coverage
+echo "::group::($(date -Iseconds)) Output info of profraw files"
+ls -l "$(realpath build-coverage/profraw)"
+echo "::endgroup::"
 echo "::group::($(date -Iseconds)) Collect coverage"
 llvm-profdata merge  -sparse build-coverage/profraw/*.profraw -o coverage/coverage.profdata
 llvm-cov show --format=text build-coverage/libOGDF.so -instr-profile=coverage/coverage.profdata > coverage/coverage.txt
