@@ -41,13 +41,11 @@
 #include <ogdf/basic/geometry.h>
 
 #include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <iterator>
 #include <limits>
 #include <utility>
-
-#define _USE_MATH_DEFINES // for M_PI
-#include <cmath>
 #include <vector>
 
 namespace ogdf {
@@ -624,7 +622,7 @@ double LayoutStatistics::angularResolution(const GraphAttributes& ga) {
 			node v = adj->twinNode(); // v becomes a neighbor of u
 			double x = ga.x(u) - ga.x(v); // x coordinate difference
 			double y = ga.y(u) - ga.y(v); // y coordinate difference
-			angles.pushBack((atan2(y, x) * 180 / M_PI)); // convert to degrees
+			angles.pushBack(Math::radiansToDegrees(atan2(y, x)));
 		}
 
 		// Sort angles in ascending order
@@ -796,7 +794,7 @@ double LayoutStatistics::edgeOrthogonality(const GraphAttributes& ga) {
 		double y = ga.y(e->source()) - ga.y(e->target()); // y coordinate difference
 
 		// calculate angle relative to x-axis
-		angleTemp = atan2(y, x) * 180 / M_PI; // convert radians to degrees
+		angleTemp = Math::radiansToDegrees(atan2(y, x));
 
 		// applying mod 90 to get the angle in the range [0, 90)
 		angleTemp = fmod(angleTemp, 90.0);
@@ -964,7 +962,7 @@ double LayoutStatistics::averageFlow(const GraphAttributes& ga) {
 		// calculate edge angle
 		double x = ga.x(source) - ga.x(target); // x coordinate difference
 		double y = ga.y(source) - ga.y(target); // y coordinate difference
-		totalAngle += atan2(y, x) * 180 / M_PI; // convert to degrees
+		totalAngle += Math::radiansToDegrees(atan2(y, x));
 	}
 	return totalAngle /= m; // return average flow
 }
