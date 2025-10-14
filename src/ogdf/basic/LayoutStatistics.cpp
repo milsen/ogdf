@@ -752,7 +752,8 @@ double LayoutStatistics::nodeUniformity(const GraphAttributes& ga, size_t gridWi
 		// if cell has nodes, calculate deviation
 		if (cellCount > 0) {
 			// calculate deviation from ideal uniformity
-			deviationCheck = fabs(cellCount - idealUniformity);
+			deviationCheck = cellCount > idealUniformity ? cellCount - idealUniformity
+														 : idealUniformity - cellCount;
 			// if deviation is 0 or 1, skip it
 			// as it is considered uniform enough
 			if (deviationCheck == 0 || deviationCheck == 1) {
