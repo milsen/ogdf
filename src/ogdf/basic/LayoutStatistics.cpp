@@ -41,11 +41,14 @@
 #include <ogdf/basic/geometry.h>
 
 #include <algorithm>
+#include <cstddef>
+#include <iterator>
+#include <limits>
+#include <utility>
+
 #define _USE_MATH_DEFINES // for M_PI
 #include <cmath>
 #include <vector>
-
-#include <math.h>
 
 namespace ogdf {
 
