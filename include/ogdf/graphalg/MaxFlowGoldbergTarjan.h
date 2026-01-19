@@ -40,6 +40,7 @@
 #include <ogdf/graphalg/MaxFlowModule.h>
 
 #include <algorithm>
+#include <limits>
 
 //#define OGDF_GT_USE_GAP_RELABEL_HEURISTIC
 #define OGDF_GT_USE_MAX_ACTIVE_LABEL
