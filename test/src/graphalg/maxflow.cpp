@@ -159,10 +159,13 @@ bool printInstance(const Graph& graph, const EdgeArray<T> caps, const node s, co
  * @param flow the total flow from source to sink
  * @param computeFlow if true the reference algorithms result is
  *        compared to the given flow
+ * @param checkFlowAtTerminals if true the source and sink are checked for
+ *        having \p flow much outgoing and incoming flow respectively
  */
 template<typename VALUE_TYPE>
 void validateFlow(const Graph& graph, const EdgeArray<VALUE_TYPE>& caps, const node s, const node t,
-		const EdgeArray<VALUE_TYPE>& flows, const VALUE_TYPE flow, bool computeFlow = false) {
+		const EdgeArray<VALUE_TYPE>& flows, const VALUE_TYPE flow, bool computeFlow = false,
+		bool checkFlowAtTerminals = true) {
 	EpsilonTest et;
 	const VALUE_TYPE ZERO(0);
 
@@ -189,13 +192,17 @@ void validateFlow(const Graph& graph, const EdgeArray<VALUE_TYPE>& caps, const n
 			}
 		}
 		if (v == s) {
-			// there are Max-Flow algorithms that allow incoming flow in s
-			AssertThat(et.equal(output, flow + income) || printInstance(graph, caps, s, t, flows),
-					IsTrue());
+			if (checkFlowAtTerminals) {
+				// there are Max-Flow algorithms that allow incoming flow in s
+				AssertThat(et.equal(output, flow + income) || printInstance(graph, caps, s, t, flows),
+						IsTrue());
+			}
 		} else if (v == t) {
-			// there are Max-Flow algorithms that allow outgoing flow from t
-			AssertThat(et.equal(income, flow + output) || printInstance(graph, caps, s, t, flows),
-					IsTrue());
+			if (checkFlowAtTerminals) {
+				// there are Max-Flow algorithms that allow outgoing flow from t
+				AssertThat(et.equal(income, flow + output) || printInstance(graph, caps, s, t, flows),
+						IsTrue());
+			}
 		} else {
 			AssertThat(et.equal(income, output) || printInstance(graph, caps, s, t, flows), IsTrue());
 		}
@@ -207,6 +214,23 @@ void validateFlow(const Graph& graph, const EdgeArray<VALUE_TYPE>& caps, const n
 		VALUE_TYPE refFlow = mfek.computeValue(caps, s, t);
 		AssertThat(et.equal(flow, refFlow) || printInstance(graph, caps, s, t, flows), IsTrue());
 	}
+}
+
+template<typename MAX_FLOW_ALGO, typename VALUE_TYPE>
+void testEarlyTerminationIfAvailable(MAX_FLOW_ALGO& alg, const Graph& graph, VALUE_TYPE required,
+		const EdgeArray<VALUE_TYPE>& caps, node s, node t) { }
+
+template<typename VALUE_TYPE>
+void testEarlyTerminationIfAvailable(MaxFlowGoldbergTarjan<VALUE_TYPE>& alg, const Graph& graph,
+		VALUE_TYPE required, const EdgeArray<VALUE_TYPE>& caps, node s, node t) {
+	alg.setRequiredFlow(required);
+
+	EdgeArray<VALUE_TYPE> algFlows(graph);
+	VALUE_TYPE algFlow = alg.computeValue(caps, s, t);
+	OGDF_ASSERT(algFlow >= required);
+
+	alg.computeFlowAfterValue(algFlows);
+	validateFlow(graph, caps, s, t, algFlows, algFlow, false, false);
 }
 
 /**
@@ -336,6 +360,10 @@ void describeMaxFlowModule(const string& name, const MaxFlowRequirement reqs = M
 				alg.computeFlowAfterValue(algFlows);
 
 				validateFlow(graph, caps, s, t, algFlows, algFlow, true);
+
+				// test early termination of algorithms that support it
+				// (currently only MaxFlowGoldbergTarjan)
+				testEarlyTerminationIfAvailable(alg, graph, algFlow / (VALUE_TYPE)2, caps, s, t);
 			});
 		}
 	});

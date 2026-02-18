@@ -70,6 +70,7 @@ class MaxFlowGoldbergTarjan : public MaxFlowModule<TCap> {
 	NodeArray<ListIterator<node>> m_labelListPosition; // holds the iterator of every node in the corresp. list of m_labeList
 	Array<List<node>> m_labelList; // array indexed by label, contains list of nodes with that label
 #endif
+	TCap m_requiredFlow = std::numeric_limits<TCap>::max();
 
 	mutable List<node> m_cutNodes;
 	mutable List<edge> m_cutEdges;
@@ -241,6 +242,36 @@ class MaxFlowGoldbergTarjan : public MaxFlowModule<TCap> {
 	}
 
 public:
+	/**
+	 * If set, computeValue() will terminate as soon as it can guarantee that
+	 * there is a maximum flow from s to t greater than \p requiredFlow.
+	 *
+	 * If, after setting a required flow, you want to return to the normal
+	 * algorithm behavior without early termination, set the required flow to
+	 * \c std::numeric_limits<TCap>::max().
+	 *
+	 * @warning If computeValue() has been executed with a set required flow,
+	 * computeFlowAfterValue() will not return the maximum flow anymore but
+	 * rather an s-t-flow with a value greater or equal to \p requiredFlow.
+	 * This value may differ from the value returned by computeValue()!
+	 *
+	 * @param requiredFlow The value of an s-t-flow required for early
+	 * termination.
+	 */
+	inline void setRequiredFlow(TCap requiredFlow) { m_requiredFlow = requiredFlow; }
+
+	/**
+	 * @return the currently set s-t-flow value which, when reached, triggers an
+	 * early termination of the max-flow computation
+	 */
+	inline TCap getRequiredFlow() { return m_requiredFlow; }
+
+	/**
+	 * @return whether the algorithm may currently terminate early as determined
+	 * by setRequiredFlow()
+	 */
+	inline bool terminatesEarly() { return m_requiredFlow < std::numeric_limits<TCap>::max(); }
+
 	// first stage: push excess towards sink
 	TCap computeValue(const EdgeArray<TCap>& cap, const node& s, const node& t) {
 		// TODO: init this stuff in the module?
@@ -326,6 +357,10 @@ public:
 						push(adj);
 						active.pushBack(adj->twinNode());
 #endif
+						// Terminate early if t has enough flow.
+						if (w == *this->m_t && m_ex[*this->m_t] > m_requiredFlow) {
+							return m_ex[*this->m_t];
+						}
 					} else {
 						if (adj != v->lastAdj()) {
 							adj = adj->succ();
